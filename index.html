@@ -56,94 +56,92 @@
 </head>
 <body>
   <div class="container">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/OOjs_UI_icon_home.svg/1200px-OOjs_UI_icon_home.svg.png" class="logo" alt="Leasely logo" />
-
+    <img src="leasely-logo.png" class="logo" alt="Leasely logo" />
     <div id="welcome" class="screen active">
       <h1>Welcome to Leasely</h1>
       <p style="text-align:center;">Want to rent? Start here.</p>
       <button onclick="goTo('signup')">Create Account</button>
       <button onclick="goTo('login')">Login</button>
     </div>
-
     <div id="signup" class="screen">
       <h2>Create Account</h2>
-      <input placeholder="Email" id="signupEmail" />
-      <input type="password" placeholder="Password" id="signupPass" />
+      <input placeholder="Email" id="signupEmail" type="email" required />
+      <input type="password" placeholder="Password" id="signupPass" required />
       <button onclick="goTo('form')">Next</button>
       <button class="back" onclick="goTo('welcome')">← Back</button>
     </div>
-
     <div id="login" class="screen">
       <h2>Login</h2>
-      <input placeholder="Email" id="loginEmail" />
-      <input type="password" placeholder="Password" id="loginPass" />
+      <input placeholder="Email" id="loginEmail" type="email" required />
+      <input type="password" placeholder="Password" id="loginPass" required />
       <button onclick="goTo('form')">Login</button>
       <button class="back" onclick="goTo('welcome')">← Back</button>
     </div>
-
     <div id="form" class="screen">
       <h2>Rental Application</h2>
-      <input placeholder="Full Name" id="fullName" />
-      <input placeholder="Phone Number" id="phone" />
+      <input placeholder="Full Name" id="fullName" required />
+      <input placeholder="Phone Number" id="phone" required />
       <button onclick="goTo('prefs')">Next</button>
       <button class="back" onclick="goTo('signup')">← Back</button>
     </div>
-
     <div id="prefs" class="screen">
       <h2>Preferences</h2>
       <label>Do you have a car?</label>
-      <select id="car">
-        <option>No</option>
+      <select id="car" required>
+        <option value="">--Choose--</option>
         <option>Yes</option>
+        <option>No</option>
       </select>
       <label>Do you have a pet?</label>
-      <select id="pet">
-        <option>No</option>
+      <select id="pet" required>
+        <option value="">--Choose--</option>
         <option>Yes</option>
+        <option>No</option>
       </select>
-      <textarea placeholder="Additional Comments" id="comments"></textarea>
+      <textarea placeholder="Additional Comments" id="comments" required></textarea>
       <button onclick="goTo('cotenant')">Next</button>
       <button class="back" onclick="goTo('form')">← Back</button>
     </div>
-
     <div id="cotenant" class="screen">
       <h2>Add Co-Tenant</h2>
-      <input placeholder="Co-Tenant Name" id="cotenantName" />
-      <input placeholder="Co-Tenant Email" id="cotenantEmail" />
+      <input placeholder="Co-Tenant Name" id="cotenantName" required />
+      <input placeholder="Co-Tenant Email" id="cotenantEmail" type="email" required />
       <button onclick="submitApp()">Submit Application</button>
       <button class="back" onclick="goTo('prefs')">← Back</button>
     </div>
-
     <div id="done" class="screen">
       <h2>Application Submitted 🎉</h2>
       <p style="text-align:center;">Thank you for applying. Your data has been saved.</p>
     </div>
   </div>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const supabase = supabase.createClient(
       'https://yjhcftjzccklarqnnwrd.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqaGNmdGp6Y2NrbGFycW5ud3JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc4NDExNDgsImV4cCI6MjA2MzQxNzE0OH0.LxxUy5J6RqTjk5ZPOzGU47CEsovuKILVAlpspy_o1b0'
     );
-
     function goTo(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
-
     async function submitApp() {
-      const data = {
-        email: document.getElementById("signupEmail").value || document.getElementById("loginEmail").value,
-        name: document.getElementById("fullName").value,
-        phone: document.getElementById("phone").value,
-        car: document.getElementById("car").value,
-        pet: document.getElementById("pet").value,
-        comments: document.getElementById("comments").value,
-        cotenant_name: document.getElementById("cotenantName").value,
-        cotenant_email: document.getElementById("cotenantEmail").value
-      };
-      const { error } = await supabase.from('applications').insert(data);
+      const email = document.getElementById("signupEmail").value || document.getElementById("loginEmail").value;
+      const name = document.getElementById("fullName").value;
+      const phone = document.getElementById("phone").value;
+      const car = document.getElementById("car").value;
+      const pet = document.getElementById("pet").value;
+      const comments = document.getElementById("comments").value;
+      const cotenantName = document.getElementById("cotenantName").value;
+      const cotenantEmail = document.getElementById("cotenantEmail").value;
+      if (!email || !name || !phone || !car || !pet || !comments || !cotenantName || !cotenantEmail) {
+        alert("Please fill out all fields.");
+        return;
+      }
+      const { error } = await supabase.from('applications').insert({
+        email, name, phone, car, pet, comments,
+        cotenant_name: cotenantName,
+        cotenant_email: cotenantEmail
+      });
       if (error) {
         alert('Error submitting application.');
         console.error(error);
