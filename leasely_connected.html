@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Leasely - Rental App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f8fb;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 480px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    input, select, textarea {
+      border: 1px solid #ccc;
+    }
+    button {
+      border: none;
+      color: white;
+      background: #007bff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to Leasely</h1>
+    <form id="leaselyForm">
+      <input placeholder="Full Name" name="fullName" required />
+      <input placeholder="Email" name="email" type="email" required />
+      <input placeholder="Phone Number" name="phone" required />
+      <label>Do you have a car?</label>
+      <select name="hasCar">
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+      </select>
+      <label>Do you have a pet?</label>
+      <select name="hasPet">
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+      </select>
+      <textarea placeholder="Comments" name="comments"></textarea>
+      <h2>Co-Tenant</h2>
+      <input placeholder="Co-Tenant Name" name="cotenantName" />
+      <input placeholder="Co-Tenant Email" name="cotenantEmail" type="email" />
+      <button type="submit">Submit Application</button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabase = supabase.createClient(
+      'https://yjhcftjzccklarqnnwrd.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqaGNmdGp6Y2NrbGFycW5ud3JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc4NDExNDgsImV4cCI6MjA2MzQxNzE0OH0.LxxUy5J6RqTjk5ZPOzGU47CEsovuKILVAlpspy_o1b0'
+    );
+
+    const form = document.getElementById('leaselyForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const app = {
+        name: data.get('fullName'),
+        email: data.get('email'),
+        phone: data.get('phone'),
+        car: data.get('hasCar'),
+        pet: data.get('hasPet'),
+        comments: data.get('comments'),
+        cotenant_name: data.get('cotenantName'),
+        cotenant_email: data.get('cotenantEmail')
+      };
+      const { error } = await supabase.from('applications').insert(app);
+      if (error) {
+        alert('Error submitting application.');
+        console.error(error);
+      } else {
+        alert('Application submitted!');
+        form.reset();
+      }
+    });
+  </script>
+</body>
+</html>
