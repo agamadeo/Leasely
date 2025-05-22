@@ -83,8 +83,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const car = document.getElementById('car').value;
     const pet = document.getElementById('pet').value;
     const comments = document.getElementById('comments').value.trim();
-    const cotenantName = document.getElementById('cotenantName').value.trim();
-    const cotenantEmail = document.getElementById('cotenantEmail').value.trim();
+    const cotenantName = document.getElementById('cotenantName').value.trim() || null;
+    const cotenantEmail = document.getElementById('cotenantEmail').value.trim() || null;
 
     if (!email || !name || !phone || !car || !pet || !comments) {
       alert('Please fill out all required fields.');
@@ -102,10 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Please enter a valid co-tenant email address or leave it blank.');
       return;
     }
-    if (cotenantName && !cotenantEmail) {
-      alert('Please provide a co-tenant email or leave both co-tenant fields blank.');
-      return;
-    }
 
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.disabled = true;
@@ -114,8 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const { error } = await supabase.from('applications').insert({
       user_id: userId,
       email, name, phone, car, pet, comments,
-      cotenant_name: cotenantName || null,
-      cotenant_email: cotenantEmail || null
+      cotenant_name: cotenantName,
+      cotenant_email: cotenantEmail
     });
 
     submitBtn.disabled = false;
