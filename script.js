@@ -102,6 +102,10 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Please enter a valid co-tenant email address or leave it blank.');
       return;
     }
+    if (cotenantName && !cotenantEmail) {
+      alert('Please provide a co-tenant email or leave both co-tenant fields blank.');
+      return;
+    }
 
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.disabled = true;
