@@ -4,115 +4,73 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Leasely - Rental App</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f4f8fb;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    .container {
-      max-width: 480px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .screen { display: none; }
-    .active { display: block; }
-    h1, h2 {
-      text-align: center;
-      color: #2c3e50;
-    }
-    input, select, textarea, button {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0;
-      border-radius: 6px;
-      font-size: 16px;
-      box-sizing: border-box;
-    }
-    input, select, textarea {
-      border: 1px solid #ccc;
-    }
-    button {
-      border: none;
-      color: white;
-      background: #007bff;
-      cursor: pointer;
-    }
-    button.back {
-      background: #ccc;
-      color: black;
-    }
-    .logo {
-      display: block;
-      margin: 0 auto 20px;
-      width: 180px;
-    }
-    #cotenantFields { display: none; }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="container">
-    <img src="leasely-logo.png" class="logo" alt="Leasely logo" />
+    <img src="images/leasely-logo.png" class="logo" alt="Leasely rental application logo" />
     <div id="welcome" class="screen active">
       <h1>Welcome to Leasely</h1>
       <p style="text-align:center;">Want to rent? Start here.</p>
-      <button onclick="goTo('signup')">Create Account</button>
-      <button onclick="goTo('login')">Login</button>
+      <button onclick="goTo('signup', 'welcome')">Create Account</button>
+      <button onclick="goTo('login', 'welcome')">Login</button>
     </div>
     <div id="signup" class="screen">
       <h2>Create Account</h2>
-      <input placeholder="Email" id="signupEmail" type="email" required />
-      <input type="password" placeholder="Password" id="signupPass" required />
-      <button onclick="goTo('form')">Next</button>
+      <label for="signupEmail">Email</label>
+      <input id="signupEmail" type="email" placeholder="Email" required />
+      <label for="signupPass">Password</label>
+      <input id="signupPass" type="password" placeholder="Password (min 6 characters)" required />
+      <button onclick="signup()">Sign Up</button>
       <button class="back" onclick="goTo('welcome')">← Back</button>
     </div>
     <div id="login" class="screen">
       <h2>Login</h2>
-      <input placeholder="Email" id="loginEmail" type="email" required />
-      <input type="password" placeholder="Password" id="loginPass" required />
-      <button onclick="goTo('form')">Login</button>
+      <label for="loginEmail">Email</label>
+      <input id="loginEmail" type="email" placeholder="Email" required />
+      <label for="loginPass">Password</label>
+      <input id="loginPass" type="password" placeholder="Password" required />
+      <button onclick="login()">Login</button>
       <button class="back" onclick="goTo('welcome')">← Back</button>
     </div>
     <div id="form" class="screen">
       <h2>Rental Application</h2>
-      <input placeholder="Full Name" id="fullName" required />
-      <input placeholder="Phone Number" id="phone" required />
-      <button onclick="goTo('prefs')">Next</button>
-      <button class="back" onclick="goTo('signup')">← Back</button>
+      <label for="fullName">Full Name</label>
+      <input id="fullName" placeholder="Full Name" required />
+      <label for="phone">Phone Number</label>
+      <input id="phone" placeholder="Phone Number (e.g., 1234567890)" type="tel" required />
+      <button onclick="goTo('prefs', 'form')">Next</button>
+      <button class="back" onclick="goBack()">← Back</button>
     </div>
     <div id="prefs" class="screen">
       <h2>Preferences</h2>
-      <label>Do you have a car?</label>
+      <label for="car">Do you have a car?</label>
       <select id="car" required>
         <option value="">--Choose--</option>
         <option>Yes</option>
         <option>No</option>
       </select>
-      <label>Do you have a pet?</label>
+      <label for="pet">Do you have a pet?</label>
       <select id="pet" required>
         <option value="">--Choose--</option>
         <option>Yes</option>
         <option>No</option>
       </select>
-      <textarea placeholder="Additional Comments" id="comments" required></textarea>
-      <button onclick="goTo('cotenant')">Next</button>
+      <label for="comments">Additional Comments</label>
+      <textarea id="comments" placeholder="Additional Comments" required></textarea>
+      <button onclick="goTo('cotenant', 'prefs')">Next</button>
       <button class="back" onclick="goTo('form')">← Back</button>
     </div>
     <div id="cotenant" class="screen">
       <h2>Review & Submit</h2>
-      <button onclick="document.getElementById('cotenantFields').style.display = 'block'; this.style.display='none';">
-        ➕ Add Co-Tenant
-      </button>
+      <button id="addCotenantBtn" onclick="toggleCotenant()">➕ Add Co-Tenant</button>
       <div id="cotenantFields">
-        <input placeholder="Co-Tenant Name" id="cotenantName" />
-        <input placeholder="Co-Tenant Email" id="cotenantEmail" type="email" />
+        <label for="cotenantName">Co-Tenant Name</label>
+        <input id="cotenantName" placeholder="Co-Tenant Name" />
+        <label for="cotenantEmail">Co-Tenant Email</label>
+        <input id="cotenantEmail" type="email" placeholder="Co-Tenant Email" />
       </div>
-      <button onclick="submitApp()">Submit Application</button>
+      <button id="submitBtn" onclick="submitApp()">Submit Application</button>
       <button class="back" onclick="goTo('prefs')">← Back</button>
     </div>
     <div id="done" class="screen">
@@ -121,41 +79,6 @@
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const supabase = supabase.createClient(
-      'https://yjhcftjzccklarqnnwrd.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqaGNmdGp6Y2NrbGFycW5ud3JkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc4NDExNDgsImV4cCI6MjA2MzQxNzE0OH0.LxxUy5J6RqTjk5ZPOzGU47CEsovuKILVAlpspy_o1b0'
-    );
-    function goTo(id) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
-    async function submitApp() {
-      const email = document.getElementById("signupEmail").value || document.getElementById("loginEmail").value;
-      const name = document.getElementById("fullName").value;
-      const phone = document.getElementById("phone").value;
-      const car = document.getElementById("car").value;
-      const pet = document.getElementById("pet").value;
-      const comments = document.getElementById("comments").value;
-      const cotenantName = document.getElementById("cotenantName").value;
-      const cotenantEmail = document.getElementById("cotenantEmail").value;
-      if (!email || !name || !phone || !car || !pet || !comments) {
-        alert("Please fill out all required fields.");
-        return;
-      }
-      const { error } = await supabase.from('applications').insert({
-        email, name, phone, car, pet, comments,
-        cotenant_name: cotenantName || null,
-        cotenant_email: cotenantEmail || null
-      });
-      if (error) {
-        alert('Error submitting application.');
-        console.error(error);
-      } else {
-        goTo('done');
-      }
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
-
