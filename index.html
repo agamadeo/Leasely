@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Leasely - Full App</title>
+  <title>Leasely - Rental App</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -52,6 +52,7 @@
       margin: 0 auto 20px;
       width: 180px;
     }
+    #cotenantFields { display: none; }
   </style>
 </head>
 <body>
@@ -103,9 +104,14 @@
       <button class="back" onclick="goTo('form')">← Back</button>
     </div>
     <div id="cotenant" class="screen">
-      <h2>Add Co-Tenant</h2>
-      <input placeholder="Co-Tenant Name" id="cotenantName" required />
-      <input placeholder="Co-Tenant Email" id="cotenantEmail" type="email" required />
+      <h2>Review & Submit</h2>
+      <button onclick="document.getElementById('cotenantFields').style.display = 'block'; this.style.display='none';">
+        ➕ Add Co-Tenant
+      </button>
+      <div id="cotenantFields">
+        <input placeholder="Co-Tenant Name" id="cotenantName" />
+        <input placeholder="Co-Tenant Email" id="cotenantEmail" type="email" />
+      </div>
       <button onclick="submitApp()">Submit Application</button>
       <button class="back" onclick="goTo('prefs')">← Back</button>
     </div>
@@ -133,14 +139,14 @@
       const comments = document.getElementById("comments").value;
       const cotenantName = document.getElementById("cotenantName").value;
       const cotenantEmail = document.getElementById("cotenantEmail").value;
-      if (!email || !name || !phone || !car || !pet || !comments || !cotenantName || !cotenantEmail) {
-        alert("Please fill out all fields.");
+      if (!email || !name || !phone || !car || !pet || !comments) {
+        alert("Please fill out all required fields.");
         return;
       }
       const { error } = await supabase.from('applications').insert({
         email, name, phone, car, pet, comments,
-        cotenant_name: cotenantName,
-        cotenant_email: cotenantEmail
+        cotenant_name: cotenantName || null,
+        cotenant_email: cotenantEmail || null
       });
       if (error) {
         alert('Error submitting application.');
